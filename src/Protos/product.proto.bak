@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option csharp_namespace = "Microservices.Grpc";
+
+package product;
+
+service ProductsService {
+	rpc GetAllProducts (GetAllProductsRequest) returns (ProductPagedList);
+	rpc GetProductById (ProductRowIdFilter) returns (Product);
+	rpc Post(Product) returns(Product);
+    rpc Put(Product) returns(Product);
+    rpc Delete(ProductRowIdFilter) returns(Empty);
+}
+
+message ProductRowIdFilter {
+	int32 product_id = 1;
+}
+
+message GetAllProductsRequest{
+	string name = 1;
+	int32 page_number = 2;
+	int32 page_size = 3;
+	string sort_by = 4;
+}
+
+message ProductPagedList{
+      repeated Product items = 1;
+	  int32 total_items = 2;
+	  int32 page_number = 3;
+	  int32 page_size = 4;
+}
+
+message Empty {}
+
+message Product{
+	int32 product_id = 1;
+	string name = 2;
+	string description = 3;
+	string category = 4;
+	float price = 5;
+}
