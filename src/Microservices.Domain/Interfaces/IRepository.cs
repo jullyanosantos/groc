@@ -11,5 +11,9 @@ namespace Microservices.Domain.Interfaces
         void Update(T entity);
         Task DeleteAsync(object id);
         int Count();
+
+        void DetachLocal(Func<T, bool> predicate);
+
+        Task WithTransactionAsync(Action transacton);
     }
 }

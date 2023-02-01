@@ -1,7 +1,7 @@
 ﻿using Microservices.Domain.Interfaces;
 using Microservices.Infrastructure.Data.Context;
+using Microservices.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Microservices.Infrastructure.Data.Repositories
 {
@@ -17,7 +17,7 @@ namespace Microservices.Infrastructure.Data.Repositories
         }
 
         #region Public Methods
-               
+
         public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
@@ -64,6 +64,32 @@ namespace Microservices.Infrastructure.Data.Repositories
         public IQueryable<T> GetAllAsQueryAsync()
         {
             return _dbSet.AsQueryable<T>();
+        }
+
+        public virtual void DetachLocal(Func<T, bool> predicate)
+        {
+            var local = _context.Set<T>().Local.Where(predicate).FirstOrDefault();
+
+            if (!local.IsNull())
+            {
+                _context.Entry(local).State = EntityState.Detached;
+            }
+        }
+
+        public async Task WithTransactionAsync(Action transacton)
+        {
+            using var trans = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                transacton.Invoke();
+                await trans.CommitAsync();
+            }
+            catch (Exception)
+            {
+                trans.Rollback();
+                throw;
+            }
         }
 
         #endregion

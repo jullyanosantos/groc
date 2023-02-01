@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microservices.Domain\Microservices.Domain.csproj" />
+    <ProjectReference Include="..\Microservices.Utils\Microservices.Utils.csproj" />
   </ItemGroup>
 
 </Project>
